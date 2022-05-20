@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import WebView from 'react-native-webview';
-import { PermissionsAndroid, RefreshControl, Dimensions, StyleSheet, ScrollView, ActivityIndicator } from 'react-native';
+import { RefreshControl, Dimensions, StyleSheet, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import { PERMISSIONS, request } from 'react-native-permissions';
 
 const wait = (timeout) => {
   return new Promise(resolve => setTimeout(resolve, timeout));
@@ -8,43 +9,45 @@ const wait = (timeout) => {
 
 const App = () => {
   const cameraPermission = async () => {
-      let granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.CAMERA,
-        {
-          title: "Camera Permission",
-          message:
-            "App needs access to your camera " +
-            "so others can see you.",
-          buttonNeutral: "Ask Me Later",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
+      if(Platform.OS === 'android') {
+        let result = await request(PERMISSIONS.ANDROID.CAMERA);
+        if(result === 'granted') {
+          console.log("Granted");
         }
-      );
-      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        console.log("You can use the camera");
-      } else {
-        console.log("Camera permission denied");
+        else if(result === 'denied') {
+          console.log("Denied");
+        }
+      }
+      if(Platform.OS == 'ios') {
+        let result = await request(PERMISSIONS.IOS.CAMERA);
+        if(result === 'granted') {
+          console.log("Granted");
+        }
+        else if(result === 'denied') {
+          console.log("Denied");
+        }
       }
   }
 
   const micPermission = async () => {
-    let granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
-      {
-        title: "Audio Permission",
-        message:
-          "App needs access to your audio / microphone",
-        buttonNeutral: "Ask Me Later",
-        buttonNegative: "Cancel",
-        buttonPositive: "OK"
+    if(Platform.OS === 'android') {
+      let result = await request(PERMISSIONS.ANDROID.RECORD_AUDIO);
+      if(result === 'granted') {
+        console.log("Granted");
       }
-    );
-    
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      console.log("You can use the Microphone");
-    } else {
-      console.log("Microphone permission denied");
-    } 
+      else if(result === 'denied') {
+        console.log("Denied");
+      }
+    }
+    if(Platform.OS == 'ios') {
+      let result = await request(PERMISSIONS.IOS.MICROPHONE);
+      if(result === 'granted') {
+        console.log("Granted");
+      }
+      else if(result === 'denied') {
+        console.log("Denied");
+      }
+    }
   }
 
   useEffect(() => {
